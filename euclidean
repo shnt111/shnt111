@@ -1,0 +1,16 @@
+def euclidean_gcd(a, b):
+    while b != 0:
+        a, b = b, a % b  # Replace a with b, and b with a % b until b becomes 0
+    return abs(a)  # Return the absolute value of a as GCD is always positive
+
+
+def main():
+    num1 = int(input("Enter the first integer: "))
+    num2 = int(input("Enter the second integer: "))
+    
+   
+    gcd_result = euclidean_gcd(num1, num2)
+    print(f"The GCD of {num1} and {num2} is: {gcd_result}")
+
+if __name__ == "__main__":
+    main()
