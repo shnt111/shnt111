@@ -1,0 +1,66 @@
+import math
+
+def euler_totient(n):
+    """
+    Calculate Euler's Totient Function φ(n).
+    """
+    result = n  # Initialize result as n
+    p = 2
+    while p * p <= n:
+        if n % p == 0:
+            while n % p == 0:
+                n //= p
+            result -= result // p  # Reduce the result
+        p += 1
+    if n > 1:  # If n is a prime number greater than 1
+        result -= result // n
+    return result
+
+def verify_eulers_theorem(a, n):
+    """
+    Verify Euler's Little Theorem: a^φ(n) ≡ 1 (mod n)
+    """
+    if math.gcd(a, n) != 1:
+        raise ValueError("a and n must be coprime.")
+    
+    phi_n = euler_totient(n)
+    result = pow(a, phi_n, n)  # Calculate a^φ(n) mod n
+    return result
+
+def main():
+    while True:
+        print("\nMenu:")
+        print("1. Calculate Euler's Totient Function φ(n)")
+        print("2. Verify Euler's Little Theorem (a^φ(n) ≡ 1 mod n)")
+        print("3. Exit")
+        
+        choice = input("Enter your choice (1/2/3): ")
+        
+        if choice == '1':
+            try:
+                n = int(input("Enter value of n: "))
+                if n <= 0:
+                    raise ValueError("n must be a positive integer.")
+                phi_n = euler_totient(n)
+                print(f"Euler's Totient Function φ({n}) = {phi_n}")
+            except ValueError as e:
+                print("Error:", e)
+        
+        elif choice == '2':
+            try:
+                a = int(input("Enter value of a: "))
+                n = int(input("Enter value of n: "))
+                result = verify_eulers_theorem(a, n)
+                print(f"Euler's Little Theorem holds: {a}^{euler_totient(n)} ≡ {result} (mod {n})")
+            except ValueError as e:
+                print("Error:", e)
+        
+        elif choice == '3':
+            print("Exiting the program.")
+            break
+        
+        else:
+            print("Invalid choice! Please try again.")
+
+# Run the menu-driven program
+main()
