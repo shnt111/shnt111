@@ -1,0 +1,56 @@
+# Function to implement the Extended Euclidean Algorithm
+def extended_euclidean(a, b):
+    if b == 0:
+        return a, 1, 0
+    gcd, x1, y1 = extended_euclidean(b, a % b)
+    x = y1
+    y = x1 - (a // b) * y1
+    return gcd, x, y
+
+# Function to solve the Diophantine equation ax + by = c
+def solve_diophantine(a, b, c):
+    gcd, x, y = extended_euclidean(a, b)
+    if c % gcd != 0:
+        return None, None, None  # No solution exists if c is not divisible by gcd(a, b)
+    
+    # Scaling the solution by c // gcd
+    x *= c // gcd
+    y *= c // gcd
+    return gcd, x, y
+
+# Menu-driven program
+def main():
+    while True:
+        print("\n--- MENU ---")
+        print("1. Solve Diophantine equation ax + by = c")
+        print("2. Exit")
+        choice = input("Enter your choice: ")
+
+        if choice == '1':
+            try:
+                # Input integers a, b, and c
+                a = int(input("Enter integer a: "))
+                b = int(input("Enter integer b: "))
+                c = int(input("Enter integer c: "))
+
+                # Solve the equation
+                gcd, x, y = solve_diophantine(a, b, c)
+                
+                if x is None and y is None:
+                    print(f"No solution exists for the equation {a}x + {b}y = {c}")
+                else:
+                    print(f"A particular solution for the equation {a}x + {b}y = {c} is: (x, y) = ({x}, {y})")
+                    print(f"Note: There are infinitely many solutions of the form (x + k * {b // gcd}, y - k * {a // gcd}) for any integer k.")
+
+            except ValueError:
+                print("Please enter valid integers.")
+
+        elif choice == '2':
+            print("Exiting program.")
+            break
+
+        else:
+            print("Invalid choice. Please try again.")
+
+if __name__ == "__main__":
+    main()
