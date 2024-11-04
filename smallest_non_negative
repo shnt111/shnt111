@@ -1,0 +1,56 @@
+def extended_gcd(a, b):
+    """Extended Euclidean Algorithm to find the GCD and coefficients."""
+    if a == 0:
+        return b, 0, 1
+    gcd, x1, y1 = extended_gcd(b % a, a)
+    x = y1 - (b // a) * x1
+    y = x1
+    return gcd, x, y
+
+def mod_inverse(a, m):
+    """Find the modular inverse of a under modulo m."""
+    gcd, x, _ = extended_gcd(a, m)
+    if gcd != 1:
+        raise ValueError(f"No modular inverse for {a} mod {m}")
+    return x % m
+
+def chinese_remainder_theorem(a, m):
+    """Solve the system of linear congruences using the Chinese Remainder Theorem."""
+    total = 0
+    prod = 1
+    for mod in m:
+        prod *= mod
+
+    for ai, mi in zip(a, m):
+        partial_prod = prod // mi
+        inv = mod_inverse(partial_prod, mi)
+        total += ai * inv * partial_prod
+
+    return total % prod  # Return the smallest non-negative solution
+
+def main():
+    print("Chinese Remainder Theorem Solver")
+    while True:
+        try:
+            n = int(input("Enter the number of congruences: "))
+            a = []
+            m = []
+            for i in range(n):
+                ai = int(input(f"Enter a[{i}] (remainder for congruence {i+1}): "))
+                mi = int(input(f"Enter m[{i}] (modulus for congruence {i+1}): "))
+                a.append(ai)
+                m.append(mi)
+
+            solution = chinese_remainder_theorem(a, m)  # Get the smallest non-negative solution
+            print(f"The smallest non-negative solution to the system of congruences is: x ≡ {solution}")
+        except ValueError as e:
+            print(f"Error: {e}")
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
+
+        cont = input("Do you want to solve another system? (y/n): ")
+        if cont.lower() != 'y':
+            break
+
+if __name__ == "__main__":
+    main()
