@@ -1,0 +1,62 @@
+class Group:
+    def __init__(self, elements, operation):
+        self.elements = elements
+        self.operation = operation
+        self.identity = self.find_identity()
+        self.validate_group()
+
+    def find_identity(self):
+        for e in self.elements:
+            if all(self.operation(e, a) == a for a in self.elements):
+                return e
+        return None
+
+    def validate_group(self):
+        if self.identity is None:
+            raise ValueError("No identity element found.")
+        for a in self.elements:
+            if not any(self.operation(a, b) == self.identity for b in self.elements):
+                raise ValueError(f"No inverse for element {a}.")
+
+    def operation_result(self, a, b):
+        return self.operation(a, b)
+
+def main_group():
+    print("Define a group with elements: {1, 2, 3, 4} and operation as addition mod 5.")
+    elements = [1, 2, 3, 4]
+    operation = lambda x, y: (x + y) % 5
+    group = Group(elements, operation)
+
+    while True:
+        print("\nMenu:")
+        print("1. Perform operation (a * b)")
+        print("2. Show identity element")
+        print("3. Show group elements")
+        print("4. Exit")
+        
+        choice = input("Enter your choice (1/2/3/4): ")
+
+        if choice == '1':
+            a = int(input("Enter first element (1-4): "))
+            b = int(input("Enter second element (1-4): "))
+            if a in group.elements and b in group.elements:
+                result = group.operation_result(a, b)
+                print(f"{a} + {b} mod 5 = {result}")
+            else:
+                print("Invalid elements. Please choose from the group.")
+
+        elif choice == '2':
+            print(f"Identity element is: {group.identity}")
+
+        elif choice == '3':
+            print("Group elements:", group.elements)
+
+        elif choice == '4':
+            print("Exiting the program.")
+            break
+        
+        else:
+            print("Invalid choice! Please try again.")
+
+# Run the group program
+main_group()
