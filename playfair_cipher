@@ -1,0 +1,132 @@
+# Helper function to generate the 5x5 key matrix for Playfair cipher
+def generate_key_matrix(keyword):
+    # Remove duplicate characters from the keyword
+    keyword = "".join(dict.fromkeys(keyword.upper().replace("J", "I")))
+    alphabet = "ABCDEFGHIKLMNOPQRSTUVWXYZ"
+    matrix = []
+    
+    # Create key matrix with unique characters from the keyword
+    for char in keyword:
+        if char not in matrix:
+            matrix.append(char)
+    
+    # Fill remaining alphabet characters in the key matrix
+    for char in alphabet:
+        if char not in matrix:
+            matrix.append(char)
+    
+    # Convert the list to a 5x5 matrix
+    return [matrix[i:i + 5] for i in range(0, 25, 5)]
+
+# Function to find the position of a character in the key matrix
+def find_position(matrix, char):
+    for row in range(5):
+        for col in range(5):
+            if matrix[row][col] == char:
+                return row, col
+    return None
+
+# Function to prepare plaintext by making digraphs and handling duplicates and padding
+def prepare_text(text):
+    text = text.upper().replace("J", "I").replace(" ", "")
+    prepared_text = []
+    
+    i = 0
+    while i < len(text):
+        a = text[i]
+        if i + 1 < len(text):
+            b = text[i + 1]
+        else:
+            b = "X"
+        
+        if a == b:
+            prepared_text.append(a + "X")
+            i += 1
+        else:
+            prepared_text.append(a + b)
+            i += 2
+    
+    return prepared_text
+
+# Function to encrypt a digraph using the Playfair cipher
+def playfair_encrypt_digraph(matrix, digraph):
+    row1, col1 = find_position(matrix, digraph[0])
+    row2, col2 = find_position(matrix, digraph[1])
+    
+    if row1 == row2:
+        # Same row: shift columns right
+        return matrix[row1][(col1 + 1) % 5] + matrix[row2][(col2 + 1) % 5]
+    elif col1 == col2:
+        # Same column: shift rows down
+        return matrix[(row1 + 1) % 5][col1] + matrix[(row2 + 1) % 5][col2]
+    else:
+        # Rectangle: swap columns
+        return matrix[row1][col2] + matrix[row2][col1]
+
+# Function to decrypt a digraph using the Playfair cipher
+def playfair_decrypt_digraph(matrix, digraph):
+    row1, col1 = find_position(matrix, digraph[0])
+    row2, col2 = find_position(matrix, digraph[1])
+    
+    if row1 == row2:
+        # Same row: shift columns left
+        return matrix[row1][(col1 - 1) % 5] + matrix[row2][(col2 - 1) % 5]
+    elif col1 == col2:
+        # Same column: shift rows up
+        return matrix[(row1 - 1) % 5][col1] + matrix[(row2 - 1) % 5][col2]
+    else:
+        # Rectangle: swap columns
+        return matrix[row1][col2] + matrix[row2][col1]
+
+# Function to encrypt plaintext using Playfair cipher
+def playfair_encrypt(plaintext, keyword):
+    matrix = generate_key_matrix(keyword)
+    prepared_text = prepare_text(plaintext)
+    ciphertext = ""
+    
+    for digraph in prepared_text:
+        ciphertext += playfair_encrypt_digraph(matrix, digraph)
+    
+    return ciphertext
+
+# Function to decrypt ciphertext using Playfair cipher
+def playfair_decrypt(ciphertext, keyword):
+    matrix = generate_key_matrix(keyword)
+    prepared_text = prepare_text(ciphertext)
+    plaintext = ""
+    
+    for digraph in prepared_text:
+        plaintext += playfair_decrypt_digraph(matrix, digraph)
+    
+    return plaintext
+
+# Menu-driven function for user interaction
+def main():
+    while True:
+        print("\n--- MENU ---")
+        print("1. Encrypt")
+        print("2. Decrypt")
+        print("3. Exit")
+        choice = input("Enter your choice: ")
+
+        if choice == '1':
+            plaintext = input("Enter plaintext: ")
+            keyword = input("Enter keyword: ")
+            ciphertext = playfair_encrypt(plaintext, keyword)
+            print("Ciphertext:", ciphertext)
+
+        elif choice == '2':
+            ciphertext = input("Enter ciphertext: ")
+            keyword = input("Enter keyword: ")
+            plaintext = playfair_decrypt(ciphertext, keyword)
+            print("Decrypted Text:", plaintext)
+
+        elif choice == '3':
+            print("Exiting program.")
+            break
+
+        else:
+            print("Invalid choice. Please try again.")
+
+if __name__ == "__main__":
+    main()
