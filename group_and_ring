@@ -1,0 +1,90 @@
+class Group:
+    def __init__(self, elements, operation):
+        self.elements = elements
+        self.operation = operation
+        self.identity = self.find_identity()
+        self.inverses = self.find_inverses()
+
+    def find_identity(self):
+        for e in self.elements:
+            if all(self.operation(e, x) == x and self.operation(x, e) == x for x in self.elements):
+                return e
+        return None
+
+    def find_inverses(self):
+        inverses = {}
+        for e in self.elements:
+            for x in self.elements:
+                if self.operation(e, x) == self.identity and self.operation(x, e) == self.identity:
+                    inverses[e] = x
+                    break
+        return inverses
+
+    def display(self):
+        print("Group Elements:", self.elements)
+        print("Identity Element:", self.identity)
+        print("Inverses:", self.inverses)
+
+
+class Ring:
+    def __init__(self, elements, add_op, mul_op):
+        self.elements = elements
+        self.add_op = add_op
+        self.mul_op = mul_op
+        self.add_identity = self.find_add_identity()
+        self.add_inverses = self.find_add_inverses()
+
+    def find_add_identity(self):
+        for e in self.elements:
+            if all(self.add_op(e, x) == x and self.add_op(x, e) == x for x in self.elements):
+                return e
+        return None
+
+    def find_add_inverses(self):
+        inverses = {}
+        for e in self.elements:
+            for x in self.elements:
+                if self.add_op(e, x) == self.add_identity:
+                    inverses[e] = x
+                    break
+        return inverses
+
+    def display(self):
+        print("Ring Elements:", self.elements)
+        print("Additive Identity:", self.add_identity)
+        print("Additive Inverses:", self.add_inverses)
+
+
+def add(x, y):
+    return x + y
+
+def multiply(x, y):
+    return x * y
+
+def main():
+    while True:
+        print("\nMenu:")
+        print("1. Create a Group")
+        print("2. Create a Ring")
+        print("3. Exit")
+        choice = input("Enter your choice: ")
+
+        if choice == '1':
+            elements = list(map(int, input("Enter group elements (space-separated): ").split()))
+            operation = add  # Using addition as the group operation
+            group = Group(elements, operation)
+            group.display()
+        elif choice == '2':
+            elements = list(map(int, input("Enter ring elements (space-separated): ").split()))
+            ring_add_op = add  # Using addition for the ring
+            ring_mul_op = multiply  # Using multiplication for the ring
+            ring = Ring(elements, ring_add_op, ring_mul_op)
+            ring.display()
+        elif choice == '3':
+            break
+        else:
+            print("Invalid choice. Please try again.")
+
+
+if __name__ == "__main__":
+    main()
