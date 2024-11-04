@@ -1,0 +1,64 @@
+def fermat_little_theorem(a, p):
+    """
+    Checks Fermat's Little Theorem:
+    If p is prime, then a^(p-1) ≡ 1 (mod p) when a is not divisible by p.
+    """
+    if p <= 1:
+        raise ValueError("p must be a prime number greater than 1.")
+    if a % p == 0:
+        raise ValueError("a must not be divisible by p.")
+    
+    result = pow(a, p - 1, p)
+    return result
+
+def modular_inverse(a, p):
+    """
+    Calculates the modular inverse of a under modulo p.
+    This is only valid if p is prime and a is not divisible by p.
+    """
+    if p <= 1:
+        raise ValueError("p must be a prime number greater than 1.")
+    if a % p == 0:
+        raise ValueError("a must not be divisible by p.")
+    
+    return pow(a, p - 2, p)
+
+def main():
+    while True:
+        print("\nMenu:")
+        print("1. Check Fermat's Little Theorem (a^(p-1) ≡ 1 mod p)")
+        print("2. Calculate Modular Inverse using Fermat's Theorem")
+        print("3. Exit")
+        
+        choice = input("Enter your choice (1/2/3): ")
+        
+        if choice == '1':
+            try:
+                a = int(input("Enter value of a: "))
+                p = int(input("Enter value of prime p: "))
+                result = fermat_little_theorem(a, p)
+                if result == 1:
+                    print(f"Fermat's Little Theorem holds: {a}^{p-1} ≡ 1 (mod {p})")
+                else:
+                    print(f"Fermat's Little Theorem does not hold: {a}^{p-1} ≡ {result} (mod {p})")
+            except ValueError as e:
+                print("Error:", e)
+        
+        elif choice == '2':
+            try:
+                a = int(input("Enter value of a: "))
+                p = int(input("Enter value of prime p: "))
+                result = modular_inverse(a, p)
+                print(f"Modular inverse of {a} under modulo {p} is {result}")
+            except ValueError as e:
+                print("Error:", e)
+        
+        elif choice == '3':
+            print("Exiting the program.")
+            break
+        
+        else:
+            print("Invalid choice! Please try again.")
+
+# Run the menu-driven program
+main()
