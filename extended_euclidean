@@ -1,0 +1,23 @@
+def extended_euclidean(a, b):
+    # Base case
+    if b == 0:
+        return a, 1, 0
+    else:
+        gcd, x1, y1 = extended_euclidean(b, a % b)  # Recursive call
+        # Update x and y using results of recursive call
+        x = y1
+        y = x1 - (a // b) * y1
+        return gcd, x, y
+
+
+def main():
+    num1 = int(input("Enter the first integer: "))
+    num2 = int(input("Enter the second integer: "))
+    
+   
+    gcd_result, x, y = extended_euclidean(num1, num2)
+    print(f"The GCD of {num1} and {num2} is: {gcd_result}")
+    print(f"Coefficients x and y such that {num1}*x + {num2}*y = {gcd_result} are: x = {x}, y = {y}")
+
+if __name__ == "__main__":
+    main()
