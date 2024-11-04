@@ -1,0 +1,70 @@
+# Vigenere Cipher implementation
+
+# Function to encrypt plaintext using the Vigenère cipher
+def vigenere_encrypt(plaintext, key):
+    ciphertext = []
+    key_length = len(key)
+    
+    for i, char in enumerate(plaintext):
+        if char.isalpha():
+            # Determine the offset (65 for 'A', 97 for 'a')
+            offset = 65 if char.isupper() else 97
+            # Encrypt character
+            key_char = key[i % key_length].upper()
+            key_shift = ord(key_char) - 65
+            cipher_char = chr((ord(char) - offset + key_shift) % 26 + offset)
+            ciphertext.append(cipher_char)
+        else:
+            ciphertext.append(char)  # Non-alphabet characters remain the same
+    
+    return ''.join(ciphertext)
+
+# Function to decrypt ciphertext using the Vigenère cipher
+def vigenere_decrypt(ciphertext, key):
+    plaintext = []
+    key_length = len(key)
+    
+    for i, char in enumerate(ciphertext):
+        if char.isalpha():
+            # Determine the offset (65 for 'A', 97 for 'a')
+            offset = 65 if char.isupper() else 97
+            # Decrypt character
+            key_char = key[i % key_length].upper()
+            key_shift = ord(key_char) - 65
+            plain_char = chr((ord(char) - offset - key_shift) % 26 + offset)
+            plaintext.append(plain_char)
+        else:
+            plaintext.append(char)  # Non-alphabet characters remain the same
+    
+    return ''.join(plaintext)
+
+# Menu-driven function for user interaction
+def main():
+    while True:
+        print("\n--- MENU ---")
+        print("1. Encrypt")
+        print("2. Decrypt")
+        print("3. Exit")
+        choice = input("Enter your choice: ")
+        
+        if choice == '1':
+            plaintext = input("Enter plaintext: ")
+            key = input("Enter key: ")
+            ciphertext = vigenere_encrypt(plaintext, key)
+            print("Ciphertext:", ciphertext)
+        
+        elif choice == '2':
+            ciphertext = input("Enter ciphertext: ")
+            key = input("Enter key: ")
+            plaintext = vigenere_decrypt(ciphertext, key)
+            print("Decrypted Text:", plaintext)
+        
+        elif choice == '3':
+            print("Exiting program.")
+            break
+        
+        else:
+            print("Invalid choice. Please try again.")
+
+if __name__ == "__main__":
+    main()
