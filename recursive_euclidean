@@ -1,0 +1,33 @@
+def gcd_recursive(a, b):
+    if b == 0:
+        return a
+    else:
+        return gcd_recursive(b, a % b)
+
+def main():
+    while True:
+        print("\n--- MENU ---")
+        print("1. Compute GCD of two numbers")
+        print("2. Exit")
+        choice = input("Enter your choice: ")
+
+        if choice == '1':
+            
+            try:
+                num1 = int(input("Enter the first integer: "))
+                num2 = int(input("Enter the second integer: "))
+                # Calculate GCD
+                result = gcd_recursive(num1, num2)
+                print(f"The GCD of {num1} and {num2} is: {result}")
+            except ValueError:
+                print("Please enter valid integers.")
+        
+        elif choice == '2':
+            print("Exiting program.")
+            break
+        
+        else:
+            print("Invalid choice. Please try again.")
+
+if __name__ == "__main__":
+    main()
