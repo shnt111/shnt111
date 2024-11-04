@@ -1,0 +1,100 @@
+import numpy as np
+
+def mod_inverse(a, m):
+    """Return the modular inverse of a under modulo m."""
+    a = a % m
+    for x in range(1, m):
+        if (a * x) % m == 1:
+            return x
+    return None
+
+def matrix_inverse(matrix):
+    """Calculate the inverse of a 2x2 matrix modulo 26."""
+    det = int(np.round(np.linalg.det(matrix)))  # Determinant of the matrix
+    det_inv = mod_inverse(det, 26)  # Modular inverse of the determinant
+
+    if det_inv is None:
+        raise ValueError("Matrix is not invertible under modulo 26.")
+
+    # Adjugate matrix
+    adjugate_matrix = np.array([[matrix[1, 1], -matrix[0, 1]],
+                                 [-matrix[1, 0], matrix[0, 0]]])
+    inverse_matrix = (det_inv * adjugate_matrix) % 26
+    return inverse_matrix.astype(int)
+
+def encrypt(plaintext, key):
+    """Encrypt the plaintext using the Hill cipher."""
+    plaintext = plaintext.upper().replace(" ", "")
+    while len(plaintext) % 2 != 0:
+        plaintext += 'X'  # Padding with 'X' if not a multiple of 2
+
+    ciphertext = ""
+    for i in range(0, len(plaintext), 2):
+        block = np.array([[ord(plaintext[i]) - 65],
+                          [ord(plaintext[i + 1]) - 65]])
+        encrypted_block = np.dot(key, block) % 26
+        ciphertext += ''.join(chr(num + 65) for num in encrypted_block.flatten())
+
+    return ciphertext
+
+def decrypt(ciphertext, key):
+    """Decrypt the ciphertext using the Hill cipher."""
+    ciphertext = ciphertext.upper().replace(" ", "")
+    decrypted_text = ""
+
+    # Calculate the inverse of the key matrix
+    inverse_key = matrix_inverse(key)
+
+    for i in range(0, len(ciphertext), 2):
+        block = np.array([[ord(ciphertext[i]) - 65],
+                          [ord(ciphertext[i + 1]) - 65]])
+        decrypted_block = np.dot(inverse_key, block) % 26
+        decrypted_text += ''.join(chr(num + 65) for num in decrypted_block.flatten())
+
+    return decrypted_text
+
+def main():
+    while True:
+        print("\nMenu:")
+        print("1. Encrypt")
+        print("2. Decrypt")
+        print("3. Exit")
+        choice = input("Enter your choice: ")
+
+        if choice == '1':
+            key = []
+            print("Enter the 2x2 key matrix (row-wise):")
+            for _ in range(2):
+                row = list(map(int, input().split()))
+                key.append(row)
+            key = np.array(key)
+
+            plaintext = input("Enter the plaintext: ")
+            try:
+                ciphertext = encrypt(plaintext, key)
+                print("Ciphertext:", ciphertext)
+            except ValueError as e:
+                print(e)
+
+        elif choice == '2':
+            key = []
+            print("Enter the 2x2 key matrix (row-wise):")
+            for _ in range(2):
+                row = list(map(int, input().split()))
+                key.append(row)
+            key = np.array(key)
+
+            ciphertext = input("Enter the ciphertext: ")
+            try:
+                decrypted_text = decrypt(ciphertext, key)
+                print("Decrypted Text:", decrypted_text)
+            except ValueError as e:
+                print(e)
+
+        elif choice == '3':
+            break
+        else:
+            print("Invalid choice. Please try again.")
+
+if __name__ == "__main__":
+    main()
