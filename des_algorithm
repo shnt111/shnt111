@@ -1,0 +1,73 @@
+import random
+import binascii
+
+BLOCK_SIZE = 8  # 64 bits (8 bytes) per block
+
+# Function to generate a random 8-byte key
+def generate_key(length):
+    return bytes(random.randint(0, 255) for _ in range(length))
+
+# XOR operation between two blocks of text
+def xor_blocks(a, b):
+    return bytes([x ^ y for x, y in zip(a, b)])
+
+# Simplified Feistel function (just an XOR here, can be expanded)
+def feistel_function(r, k):
+    return xor_blocks(r, k)
+
+# Feistel-based DES encryption
+def des_encrypt(plaintext, key):
+    L, R = plaintext[:BLOCK_SIZE // 2], plaintext[BLOCK_SIZE // 2:]
+
+    # Perform 16 rounds (typically DES has 16 rounds)
+    for _ in range(16):
+        round_key = key[:BLOCK_SIZE // 2]
+        temp = xor_blocks(L, feistel_function(R, round_key))
+        L, R = R, temp  # Swap L and R for next round
+
+    return R + L  # Combine for ciphertext (L and R swapped)
+
+# Feistel-based DES decryption
+def des_decrypt(ciphertext, key):
+    R, L = ciphertext[:BLOCK_SIZE // 2], ciphertext[BLOCK_SIZE // 2:]
+
+    # Perform 16 rounds in reverse order
+    for _ in range(16):
+        round_key = key[:BLOCK_SIZE // 2]
+        temp = xor_blocks(R, feistel_function(L, round_key))
+        R, L = L, temp  # Swap L and R for next round
+
+    return L + R  # Combine for plaintext (L and R swapped back)
+
+# Main menu-driven function
+def main():
+    key = generate_key(BLOCK_SIZE)
+    print("Generated Key:", key.hex())
+
+    while True:
+        print("\n--- MENU ---")
+        print("1. Encrypt")
+        print("2. Decrypt")
+        print("3. Exit")
+        choice = input("Enter your choice: ")
+
+        if choice == '1':
+            plaintext = input("Enter plaintext (8 characters): ").ljust(BLOCK_SIZE)[:BLOCK_SIZE].encode()
+            ciphertext = des_encrypt(plaintext, key)
+            print("Ciphertext:", ciphertext.hex())
+
+        elif choice == '2':
+            ciphertext_hex = input("Enter ciphertext in hex (16 hex digits): ")
+            ciphertext = bytes.fromhex(ciphertext_hex)
+            decrypted_text = des_decrypt(ciphertext, key).decode().strip()
+            print("Decrypted Text:", decrypted_text)
+
+        elif choice == '3':
+            print("Exiting program.")
+            break
+
+        else:
+            print("Invalid choice. Please try again.")
+
+if __name__ == "__main__":
+    main()
