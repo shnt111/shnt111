@@ -1,0 +1,72 @@
+# Function to implement the Extended Euclidean Algorithm
+def extended_euclidean(a, b):
+    if b == 0:
+        return a, 1, 0
+    gcd, x1, y1 = extended_euclidean(b, a % b)
+    x = y1
+    y = x1 - (a // b) * y1
+    return gcd, x, y
+
+# Function to solve the Diophantine equation ax + by = c
+def solve_diophantine(a, b, c):
+    gcd, x, y = extended_euclidean(a, b)
+    if c % gcd != 0:
+        return None, None, None  # No solution exists if c is not divisible by gcd(a, b)
+    
+    # Scaling the solution by c // gcd
+    x *= c // gcd
+    y *= c // gcd
+    return gcd, x, y
+
+# Function to find all solutions in a given range of k
+def find_solutions(a, b, c, k_range):
+    gcd, x0, y0 = solve_diophantine(a, b, c)
+    if x0 is None or y0 is None:
+        print(f"No solution exists for the equation {a}x + {b}y = {c}")
+        return
+
+    print(f"A particular solution for the equation {a}x + {b}y = {c} is: (x, y) = ({x0}, {y0})")
+    print("General solutions are of the form:")
+    print(f"x = {x0} + k * ({b // gcd}), y = {y0} - k * ({a // gcd})")
+
+    solutions = []
+    for k in range(-k_range, k_range + 1):
+        x = x0 + k * (b // gcd)
+        y = y0 - k * (a // gcd)
+        solutions.append((x, y))
+
+    print("\nAll solutions within the range are:")
+    for idx, (x, y) in enumerate(solutions):
+        print(f"k = {k_range - len(solutions) + idx + 1}: (x, y) = ({x}, {y})")
+
+# Menu-driven program
+def main():
+    while True:
+        print("\n--- MENU ---")
+        print("1. Solve Diophantine equation ax + by = c and find all solutions within a range")
+        print("2. Exit")
+        choice = input("Enter your choice: ")
+
+        if choice == '1':
+            try:
+                # Input integers a, b, c, and range for k
+                a = int(input("Enter integer a: "))
+                b = int(input("Enter integer b: "))
+                c = int(input("Enter integer c: "))
+                k_range = int(input("Enter the range for k (positive integer): "))
+
+                # Find and display solutions
+                find_solutions(a, b, c, k_range)
+
+            except ValueError:
+                print("Please enter valid integers.")
+
+        elif choice == '2':
+            print("Exiting program.")
+            break
+
+        else:
+            print("Invalid choice. Please try again.")
+
+if __name__ == "__main__":
+    main()
